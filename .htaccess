@@ -1,0 +1,8 @@
+RewriteEngine on
+
+RewriteCond %{QUERY_STRING} r
+RewriteRule .* - [L]
+
+RewriteRule ^addmovie/([^//]+)/([0-9]{4})$ api.php?action=create&title=$1&release_year=$2&r=1 [L]
+RewriteRule ^removemovie/(.*)$ api.php?action=delete&title=$1&r=1 [L]
+RewriteRule ^(.*)$ api.php?action=unknown&r=1 [L]
