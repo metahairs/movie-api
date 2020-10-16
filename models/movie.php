@@ -10,6 +10,8 @@ class Movie
     
     private $dbTable = 'movies';
     
+    private $exists;
+    
     public function __construct($connection)
     {
         $this->connection = $connection; 
@@ -26,7 +28,6 @@ class Movie
 
         $sth->execute();
 
-        return $sth;
     }
     
     public function delete()
@@ -39,7 +40,6 @@ class Movie
 
         $sth->execute();
 
-        return $sth;
     }
     
     public function read()
@@ -51,9 +51,27 @@ class Movie
         $sth->bindParam(":title", $this->title);
 
         $sth->execute();
-
-        return $sth->fetch();
+        
+        $data = $sth->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$data) {
+            
+            $this->exists = false;
+            
+            return $this;
+        }
+        
+        $this->releaseYear = $data['release_year'];
+        
+        $this->exists = true;
+        
+        return $this;
+        
     }
     
+    public function exists()
+    {
+        return $this->exists;
+    }
         
 }

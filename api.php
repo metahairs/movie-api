@@ -20,21 +20,41 @@ try {
     if ('create' == $_GET['action'] ) {
 
         $movie->title = $_GET['title'];
+        
+        if ($movie->read()->exists()) {
+            JSONResponse::showKoResponse(
+                sprintf('Movie you are trying to create "%s" already exists', $movie->title)
+            );
+        }
+        
         $movie->releaseYear = $_GET['release_year'];
         
+        $movie->create(); 
         
-        JSONResponse::showOkResponse($movie->create());
+        JSONResponse::showOkResponse(
+            sprintf('Movie "%s (%d)" created correctly', $movie->title, $movie->releaseYear)
+        );
 
     }
 
     if ('delete' == $_GET['action']) {
         
-        $movie->title = $_GET['title'];       
+        $movie->title = $_GET['title'];   
+
+        if (!$movie->read()->exists()) {
+            JSONResponse::showKoResponse(
+                sprintf('Movie you are trying to delete "%s" does not exists', $movie->title)
+            );
+        }
+        
         $movie->delete();
         
-        JSONResponse::showOkResponse('Movie deleted');
+        JSONResponse::showOkResponse(
+            sprintf('Movie "%s (%d)" deleted correctly', $movie->title, $movie->releaseYear)
+        );
         
     }
+        
 
     
 }catch(PDOException $exception){
@@ -43,5 +63,5 @@ try {
     
 }
 
-JSONResponse::showUnknown('Command not found'); 
+JSONResponse::showUnknown("Command not found. Try /addmovie/{title}/{releaseYear} or /removemovie/{title}"); 
 
